@@ -1,0 +1,51 @@
+body{
+    margin: 0;
+}
+
+.content {
+    /*flex: 1; ensures it takes up remaining space*/
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.body-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#main-container {
+    padding: 2rem;
+    padding-bottom: 1rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 50%;
+    background-color:white !important;
+}
+
+.user-card {
+    transition: transform 0.2s;
+}
+
+.user-card:hover {
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    background-color: rgb(0, 189, 120) !important;
+    border: none;
+    padding: 0.5rem 3rem;
+    font-weight: 600;
+    border-radius: 20px;
+}
+
+.btn-primary:hover {
+    background-color: rgb(0, 110, 70) !important;
+}
+
+.btn-primary:disabled {
+    opacity: 30%;
+}

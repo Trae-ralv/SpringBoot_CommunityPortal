@@ -1,0 +1,13 @@
+.alert-slide {
+    position: fixed;
+    top: -100px; /* Hidden initially  at -100px */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+    transition: top 0.5s ease-in-out;
+}
+.alert-slide.show {
+    top: 0; /* Slide down when shown */
+}

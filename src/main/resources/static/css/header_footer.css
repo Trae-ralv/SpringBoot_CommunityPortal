@@ -1,0 +1,39 @@
+ body {
+    background-color: #f8f9fa;
+}
+
+.link {
+    color: rgb(0, 137, 87);
+}
+
+#header-container{
+    width: 70%;
+}
+/*Header */
+.navbar {
+    border-bottom: 2px solid #dee2e6;
+    height: 60px;
+}
+
+/* Header Link*/
+.nav-link {
+    text-align: center;
+    padding: 10px 0px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #333;
+    background-color: #f1f1f1;
+    border-bottom: 5px outset #333;
+}
+
+/* Header Active Link*/
+.nav-active {
+    color: rgb(0, 110, 70);
+    border-bottom: 5px solid rgb(0, 110, 70);
+}
+
+.footer-container{
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}

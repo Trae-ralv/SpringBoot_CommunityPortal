@@ -1,0 +1,200 @@
+/*most of the !important is used to change the default bootstrap settings*/
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: rgb(30 31 32 / 1);
+    color: rgb(227 227 227 / 1);
+}
+
+.form-text {
+    color: rgba(227, 227, 227, 0.7) !important;
+}
+
+/* Sets a default width of 60% for the main container, adjusted in media queries for smaller screens. */
+#main-container {
+    padding: 3rem 4rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+    background-color: rgb(14 14 14 / 1);
+    width: 60%;
+}
+
+.form-floating input {
+    height: 50px;
+    border-radius: 8px;
+}
+
+/* This centers content vertically and horizontally on the page, even with dynamic widgets (as i used to display error messages)*/
+.content {
+    /*flex: 1; ensures it takes up remaining space*/
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.body-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar-brand img {
+    max-height: 60px;
+    width: auto;
+}
+
+h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: rgb(0, 137, 87) !important;
+    border: none;
+    padding: 0.5rem 3rem;
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background-color: rgb(0, 110, 70) !important;
+}
+
+.btn-primary:disabled {
+    opacity: 30%;
+}
+
+.form-control {
+    color: rgb(227 227 227 / 1) !important;
+    border-color: rgb(118, 118, 118) !important;
+    background-color: transparent !important;
+}
+
+/* Overrides the default light blue autofill background in Webkit browsers. The long transition (600,000s) prevents the background from changing, by default the background color is light blue . */
+/*I get from inspect styles, but can clearly understand*/
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+    transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+/* Ensures autofill background remains transparent in browsers that use the data-autocompleted attribute (e.g., Firefox). */
+input[data-autocompleted] {
+    background-color: transparent !important;
+}
+
+.form-control:focus {
+    border-color: rgb(0, 137, 87) !important;
+    box-shadow: 0 0 0 0.25rem rgba(0, 137, 87, 0.25) !important;
+}
+
+/* Sets the origin point for label scaling/transformations to the top-left corner. */
+.form-floating label {
+    transform-origin: top left;
+    transform: translate(0, 0) scale(1);
+    color: rgb(227 227 227 / 1) !important;
+}
+
+.sub-container p a {
+    text-decoration: none;
+    color: rgb(227 227 227 / 1);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* Overrides Bootstrap’s default label background and color when an input is focused or filled(after). */
+/*reason why i set the color again is because the default settings set to another color so i had to set back*/
+.form-floating>.form-control-plaintext~label::after,
+.form-floating>.form-control:focus~label::after,
+.form-floating>.form-control:not(:placeholder-shown)~label::after,
+.form-floating>.form-select~label::after {
+    color: rgb(227 227 227 / 1) !important;
+    background-color: transparent !important;
+}
+
+/* Customizes Bootstrap’s floating label positioning and background when the input is focused or has content. */
+.form-floating>.form-control-plaintext~label,
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label,
+.form-floating>.form-select~label {
+    transform: scale(.85) translateY(-1.7rem) translateX(.15rem);
+    background-color: rgb(14 14 14 / 1);
+    max-height: fit-content;
+}
+
+.link {
+    color: rgb(0, 137, 87);
+    font-weight: bold;
+}
+
+.link:hover {
+    color: rgb(0, 110, 70);
+}
+
+/*validation error message style*/
+.error-message {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Styles inputs with validation errors, applied via JavaScript by adding the .invalid class. */
+.invalid {
+    border-color: red !important;
+}
+
+
+.back-to-home {
+    text-decoration: none;
+    color: rgb(227 227 227 / 1);
+}
+
+.back-to-home:hover {
+    color: rgb(0, 137, 87);
+}
+
+.centered-table-container {
+    display: flex;
+    justify-content: center;
+}
+
+.form-control {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width : 769px) {
+    #main-container {
+        padding: 1.5rem;
+        margin: 0 1rem;
+        width: 80% !important;
+    }
+
+    .row {
+        flex-direction: column;
+    }
+
+    .row .col {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-floating input {
+        height: 45px;
+    }
+
+    #main-container {
+        padding: 1.25rem;
+        width: 90% !important;
+    }
+}

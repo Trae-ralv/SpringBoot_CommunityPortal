@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Profile</title>
+    <link rel="stylesheet" th:href="@{/css/header_footer.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body class="bg-body-secondary">
+<div class="body-container">
+    <nav class="navbar navbar-expand-lg bg-light p-0 shadow-sm">
+        <div class="container-fluid" id="header-container">
+            <!-- Logo -->
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/images/logo.svg}" height="40" alt="Logo" class="d-inline-block align-middle p-0">
+            </a>
+
+            <!-- Toggler for Mobile -->
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <!-- Always visible links -->
+                    <li class="nav-item">
+                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/}">
+                            <i class="fas fa-home fs-5"></i>
+                            <span class="small mt-1">Home</span>
+                        </a>
+                    </li>
+                    <!-- Shown only when authenticated -->
+                    <li class="nav-item">
+                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/network}">
+                            <i class="fas fa-users fs-5"></i>
+                            <span class="small mt-1">My Network</span>
+                        </a>
+                    </li>
+                    <!-- Shown only when NOT authenticated -->
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/login}">
+                            <i class="fa-solid fa-right-to-bracket fs-5"></i>
+                            <span class="small mt-1">Login</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/register}">
+                            <i class="fa-solid fa-user-plus fs-5"></i>
+                            <span class="small mt-1">Register</span>
+                        </a>
+                    </li>
+                    <!-- Shown only when authenticated -->
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link d-flex flex-column align-items-center px-5 nav-active" th:href="@{/profile}">
+                            <i class="fa-solid fa-id-card fs-5"></i>
+                            <span class="small mt-1">My Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/logout}">
+                            <i class="fa-solid fa-right-from-bracket fs-5"></i>
+                            <span class="small mt-1">Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div th:if="${successMessage}" class="alert alert-success text-center" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
+    <div class="container-fluid content">
+        <div class="container" id="main-container">
+            <div class="row">
+                <div class="col">
+                    <h2 class="mb-4">User Profile</h2>
+                </div>
+                <div class="col text-end">
+                    <div id="view-mode-buttons">
+                        <a href="#" class="link text-decoration-none fs-4" id="edit-profile-link"><i
+                                class="fa-solid fa-pen-to-square"></i></a>
+                    </div>
+                </div>
+            </div>
+            <form th:action="@{/profile}" method="post" th:object="${ProfileUserData}">
+                <div class="mb-4 row">
+                    <input type="hidden" th:field="*{user_id}">
+                    <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="f_name" th:field="*{f_name}"
+                                   placeholder="First Name" required disabled>
+                            <label for="f_name">First Name</label>
+                            <div class="error-message" id="f_name_error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="l_name" th:field="*{l_name}"
+                                   placeholder="Last Name" required disabled>
+                            <label for="l_name">Last Name</label>
+                            <div class="error-message" id="l_name_error"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="email" th:field="*{email}"
+                               placeholder="Email Address" required disabled>
+                        <label for="email">Email Address</label>
+                        <div class="error-message" id="email_error"></div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="phone_no" th:field="*{phone_no}"
+                               placeholder="Phone Number" pattern="[0-9]{3}-[0-9]{7,11}" required disabled>
+                        <label for="phone_no">Phone Number</label>
+                        <div class="error-message" id="phone_no_error"></div>
+                    </div>
+                </div>
+                <div class="mb-4 text-end" id="submit-container">
+                    <div id="edit-mode-buttons" style="display: none;">
+                        <button type="submit" name="action" value="update" class="btn btn-primary"
+                                id="submit-button">Save Changes<
+                        </button>
+                        <a href="#" class="btn link text-decoration-none ms-3" id="cancel-link">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="container-fluid bg-light footer-container d-flex justify-content-center align-items-center pt-3">
+        <p>© 2025 XYZ Solutions Pte. Ltd. All Rights Reserved</p>
+    </div>
+</div>
+
+
+<script th:src="@{/js/profile.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

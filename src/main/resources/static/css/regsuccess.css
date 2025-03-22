@@ -1,0 +1,24 @@
+/* bs refers to bootstraps */
+.table{
+    --bs-table-bg: transparent !important;
+    --bs-table-color: #cfcfcf !important;
+}
+
+.table th, .table td{
+    padding: 1rem;
+}
+
+.auto-navigate-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.progress {
+    height: 20px;
+    background-color: #cfcfcf;
+}
+
+/* Animates the progress bar width change over 1 second for a smooth visual effect. */
+.progress-bar {
+    transition: width 1s linear;
+}
