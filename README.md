@@ -36,7 +36,7 @@ The primary goal of this project is develop a Community Portal Form similar to L
 - create table "user" and "forget_password"
 - based on the UserModel and ForgetPasswordModel add your respective database table columns
 
-## Technologies/Dependency Used
+## Technologies/Framework Used
 - Intellij IDEA Community Edition 2024.3.4.1
 - Apache Tomcat 9.0.102
 - Oracle Open JDK 23.0.2
