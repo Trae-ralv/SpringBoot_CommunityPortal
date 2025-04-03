@@ -29,6 +29,9 @@ public class UserModel {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "user_type")
+    private Integer userType;
+
     // Constructors
     public UserModel() {}
 
@@ -53,4 +56,9 @@ public class UserModel {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public Integer getUser_type() {
+        return userType;
+    }
+    public void setUser_type(Integer userType) { this.userType = this.userType; }
 }

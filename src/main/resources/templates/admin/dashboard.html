@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>HomePage</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body class="bg-body-secondary">
+<div class="body-container">
+    <div th:if="${successMessage}" class="alert alert-success text-center" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
+    <div class="container-fluid content">
+        <div class="container table-wrapper main-container">
+            <h2>User Management <i class="fa-solid fa-users-gear"></i></h2>
+
+            <!-- Users Table -->
+            <table class="table table-striped table-hover mt-3">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Email</th>
+                    <th>Phone No</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.user_id}"></td>
+                    <td th:text="${user.f_name}"></td>
+                    <td th:text="${user.l_name}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.phone_no}"></td>
+                    <td width="5%">
+                        <form th:action="@{/admin/user/delete}" method="post"
+                              onsubmit="return confirm('Are you sure you want to delete this user?');">
+                            <input type="hidden" name="userId" th:value="${user.user_id}">
+                            <input type="hidden" name="action" value="delete">
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(users)}">
+                    <td colspan="4" class="text-center">No users found</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="sub-container">
+        <a th:href="@{/}" class="back-to-home">Back to Homepage</a>
+    </div>
+</div>
+
+<div class="overlay" id="overlay" style="display: none;">
+    <div class="modal-box">
+        <span class="close-btn" id="close-form">×</span>
+        <!-- Add/Update Form -->
+        <form id="user-form" method="post" th:object="${AdminUserData}">
+            <div class="mb-4 row">
+                <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="f_name" th:field="*{f_name}"
+                               placeholder="First Name" required>
+                        <label for="f_name">First Name</label>
+                        <div class="error-message" id="f_name_error"></div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="l_name" th:field="*{l_name}" placeholder="Last Name"
+                               required>
+                        <label for="l_name">Last Name</label>
+                        <div class="error-message" id="l_name_error"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Email Address"
+                           required>
+                    <label for="email">Email Address</label>
+                    <div class="error-message" id="email_error"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="phone_no" th:field="*{phone_no}"
+                           placeholder="Phone Number" pattern="[0-9]{3}-[0-9]{7,11}" required>
+                    <label for="phone_no">Phone Number</label>
+                    <div class="error-message" id="phone_no_error"></div>
+                </div>
+            </div>
+            <div class="mb-4" id="password-section">
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="password" th:field="*{password}"
+                           placeholder="Password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*?,]).{8,}$" required>
+                    <label for="password">Password</label>
+                    <div class="error-message" id="password_error"></div>
+                </div>
+            </div>
+            <div class="mb-4" id="confirm-password-section">
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="c_password" name="c_password"
+                           placeholder="Confirm Password" required>
+                    <label for="c_password">Confirm Password</label>
+                    <div class="error-message" id="c_password_error"></div>
+                </div>
+                <div class="form-check mt-2">
+                    <input type="checkbox" class="form-check-input" id="show-c-password">
+                    <label class="form-check-label" for="show-c-password">Show Password</label>
+                </div>
+            </div>
+            <div id="submit-container">
+                <button type="submit" class="btn btn-primary mt-3" id="submit-button">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

@@ -2,9 +2,9 @@ package org.example.springdemo.controller;
 
 import org.example.springdemo.model.UserModel;
 import org.example.springdemo.repository.AppRepository;
-import org.example.springdemo.service.NetworkService;
 import org.example.springdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -12,25 +12,26 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class UserController {
-
-    private final AppRepository userRepo;
-    private final UserService userService;
-    private final NetworkService networkService;
-    private final PasswordEncoder passwordEncoder;
+    // Instance variables for dependency injection
+    @Autowired
+    private AppRepository userRepo;
 
     @Autowired
-    public UserController(AppRepository userRepo, UserService userService,NetworkService networkService, PasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.userService = userService;
-        this.networkService = networkService;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
 
     @GetMapping("/")
-    public String showHome() {
+    public String showHome(Model model) {
+        String dynamicClass = "nav-active";
+        model.addAttribute("home", dynamicClass);
         return "index";
     }
 
@@ -134,12 +135,6 @@ public class UserController {
         UserModel existingUser = userRepo.findById(resetPass.getUser_id())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (resetPass.getPassword() == null || resetPass.getPassword().isEmpty()) {
-            model.addAttribute("errorMessage", "Password cannot be empty");
-            model.addAttribute("ResetPass", resetPass);
-            return "resetpass";
-        }
-
         existingUser.setPassword(passwordEncoder.encode(resetPass.getPassword()));
         userRepo.save(existingUser);
         return "redirect:/login?success=Password reset successful";
@@ -150,11 +145,13 @@ public class UserController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login"; // Redirect to login if not authenticated
         }
-        String email = authentication.getName();
-        UserModel user = userRepo.findByEmail(email)
+        Integer userId = Integer.parseInt(authentication.getName()); // Get user_id from authentication
+        UserModel user = userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found in database"));
         model.addAttribute("ProfileUserData", user);
         model.addAttribute("editMode", false);
+        String dynamicClass = "nav-active";
+        model.addAttribute("profile", dynamicClass);
         return "profile";
     }
 
@@ -164,9 +161,9 @@ public class UserController {
             @RequestParam(value = "action", required = false) String action,
             Authentication authentication,
             Model model) {
-        String email = authentication.getName();
-        UserModel existingUser = userRepo.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Authenticated user not found in database"));
+        Integer userId = Integer.parseInt(authentication.getName());
+        UserModel existingUser = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
         if (!existingUser.getUser_id().equals(updatedUser.getUser_id())) {
             model.addAttribute("errorMessage", "You can only update your own profile");
@@ -194,6 +191,8 @@ public class UserController {
         // Display all users when landing on the page
         List<UserModel> allUsers = userRepo.findAll();
         model.addAttribute("users", allUsers);
+        String dynamicClass = "nav-active";
+        model.addAttribute("network", dynamicClass);
         return "network";
     }
 
@@ -222,9 +221,84 @@ public class UserController {
         UserModel user = userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
         model.addAttribute("user", user);
+        String dynamicClass = "nav-active";
+        model.addAttribute("network", dynamicClass);
         return "networkprofile";
     }
 
+    @GetMapping("/admin/dashboard")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String showUserManagement(Authentication authentication, Model model) {
+        List<UserModel> allUsers = userRepo.findAll();
+        model.addAttribute("users", allUsers);
+        model.addAttribute("adminMode", true);
+        model.addAttribute("AdminUserData", new UserModel()); // Fix applied here
+        return "admin/dashboard";
+    }
 
+    @GetMapping("/admin/user-add")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String showAddUserForm(Model model) {
+        model.addAttribute("AdminUserData", new UserModel());
+        model.addAttribute("users", userRepo.findAll());
+        return "admin/dashboard";
+    }
 
+    @PostMapping("/admin/user-add")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String addUser(@ModelAttribute("AdminUserData") UserModel user, Model model) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepo.save(user);
+        model.addAttribute("successMessage", "User added successfully");
+        model.addAttribute("users", userRepo.findAll());
+        model.addAttribute("AdminUserData", new UserModel()); // Reset form
+        return "admin/dashboard";
+    }
+
+    @GetMapping("/admin/user-update/{user_id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String showUpdateUserForm(@PathVariable("user_id") Integer userId, Model model) {
+        UserModel user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+        model.addAttribute("AdminUserData", user);
+        model.addAttribute("users", userRepo.findAll());
+        return "admin/dashboard";
+    }
+
+    @PostMapping("/admin/user-update/{user_id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateUser(@PathVariable("user_id") Integer userId,
+                             @ModelAttribute("AdminUserData") UserModel updatedUser,
+                             Model model) {
+        UserModel existingUser = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+        existingUser.setF_name(updatedUser.getF_name());
+        existingUser.setL_name(updatedUser.getL_name());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPhone_no(updatedUser.getPhone_no());
+        userRepo.save(existingUser);
+        model.addAttribute("successMessage", "User updated successfully");
+        model.addAttribute("users", userRepo.findAll());
+        model.addAttribute("AdminUserData", new UserModel()); // Reset form
+        return "admin/dashboard";
+    }
+
+    @PostMapping("/admin/user/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteUser(@RequestParam("userId") Integer userId,
+                             @RequestParam("action") String action,
+                             Model model) {
+        if ("delete".equals(action)) {
+            UserModel user = userRepo.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+            userRepo.delete(user);
+            model.addAttribute("successMessage", "User deleted successfully");
+        } else {
+            model.addAttribute("errorMessage", "Invalid action");
+        }
+        model.addAttribute("users", userRepo.findAll());
+        model.addAttribute("AdminUserData", new UserModel()); // Reset form
+        return "admin/dashboard";
+    }
 }
+

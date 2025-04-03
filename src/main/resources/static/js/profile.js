@@ -1,158 +1,267 @@
-// Form validation function
-function validateForm() {
-    const f_name = document.getElementById('f_name').value;
-    const l_name = document.getElementById('l_name').value;
-    const email = document.getElementById('email').value;
-    const phone_no = document.getElementById('phone_no').value;
+$(document).ready(function() {
+    // Constants
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    const FADE_OUT_DELAY = 5000; // 5 seconds
 
-    const isFNameValid = !/[0-9]/.test(f_name) && f_name.trim() !== '';
-    const isLNameValid = !/[0-9]/.test(l_name) && l_name.trim() !== '';
-    const isEmailValid = validateEmail(email);
-    const isPhoneValid = validatePhone(phone_no) || phone_no.trim() === '';
+    // DOM Elements
+    const $editLink = $('#edit-profile-link');
+    const $cancelLink = $('#cancel-link');
+    const $submitButton = $('#submit-button');
+    const $viewModeButtons = $('#view-mode-buttons');
+    const $editModeButtons = $('#edit-mode-buttons');
+    const $inputs = $('.form-control:not(#profileImage)');
+    const $profileImage = $('#profileImage');
+    const $uploadContainer = $('.text-center');
+    const $overlay = $('#resizeOverlay');
+    const $previewImage = $('#previewImage');
+    const $zoomSlider = $('#zoomSlider');
+    const $confirmResize = $('#confirmResize');
+    const $cancelResize = $('#cancelResize');
+    const $resetCrop = $('#resetCrop');
+    const $resizeError = $('#resizeError');
+    const $successAlert = $('.alert-success');
+    const $errorAlert = $('.alert-danger');
 
-    const isValid = isFNameValid && isLNameValid && isEmailValid && isPhoneValid;
-    const submitButton = document.getElementById('submit-button');
+    let cropper = null;
+    let selectedFile = null;
 
-    submitButton.textContent = isValid ? 'Save Changes' : 'Save Disabled';
-    submitButton.disabled = !isValid;
+    // Form Validation Functions
+    function validateForm() {
+        const f_name = $('#f_name').val();
+        const l_name = $('#l_name').val();
+        const email = $('#email').val();
+        const phone_no = $('#phone_no').val();
 
-    return isValid;
-}
+        const isValid = isValidName(f_name) && isValidName(l_name) &&
+                       validateEmail(email) && (validatePhone(phone_no) || !phone_no.trim());
 
-// Input validation for first name
-document.getElementById('f_name').addEventListener('input', function () {
-    const value = this.value;
-    const errorElement = document.getElementById('f_name_error');
-
-    if (/[0-9]/.test(value)) {
-        this.classList.add('invalid');
-        errorElement.textContent = 'First Name cannot contain numbers';
-    } else if (value.trim() === '') {
-        this.classList.add('invalid');
-        errorElement.textContent = 'First Name is required';
-    } else {
-        this.classList.remove('invalid');
-        errorElement.textContent = '';
-    }
-    validateForm();
-});
-
-// Input validation for last name
-document.getElementById('l_name').addEventListener('input', function () {
-    const value = this.value;
-    const errorElement = document.getElementById('l_name_error');
-
-    if (/[0-9]/.test(value)) {
-        this.classList.add('invalid');
-        errorElement.textContent = 'Last Name cannot contain numbers';
-    } else if (value.trim() === '') {
-        this.classList.add('invalid');
-        errorElement.textContent = 'Last Name is required';
-    } else {
-        this.classList.remove('invalid');
-        errorElement.textContent = '';
-    }
-    validateForm();
-});
-
-// Input validation for email
-document.getElementById('email').addEventListener('input', function () {
-    const value = this.value;
-    const errorElement = document.getElementById('email_error');
-
-    if (!validateEmail(value)) {
-        this.classList.add('invalid');
-        errorElement.textContent = 'Please enter a valid email address';
-    } else {
-        this.classList.remove('invalid');
-        errorElement.textContent = '';
-    }
-    validateForm();
-});
-
-// Input validation for phone number
-document.getElementById('phone_no').addEventListener('input', function () {
-    const value = this.value;
-    const errorElement = document.getElementById('phone_no_error');
-
-    if (value.trim() !== '' && !validatePhone(value)) {
-        this.classList.add('invalid');
-        errorElement.textContent = 'Please enter a valid phone number (e.g., 123-4567890)';
-    } else {
-        this.classList.remove('invalid');
-        errorElement.textContent = '';
-    }
-    validateForm();
-});
-
-// Email validation regex
-function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(String(email).toLowerCase());
-}
-
-// Phone validation regex
-function validatePhone(phone) {
-    const re = /^[0-9]{3}-[0-9]{7,11}$/;
-    return re.test(phone);
-}
-
-// Clear error messages and invalid classes
-function clearErrors() {
-    document.querySelectorAll('.error-message').forEach(error => error.textContent = '');
-    document.querySelectorAll('.invalid').forEach(input => input.classList.remove('invalid'));
-}
-
-// Toggle edit mode for the form
-function toggleEditMode(enable) {
-    const inputs = document.querySelectorAll('.form-control');
-    const viewModeButtons = document.getElementById('view-mode-buttons');
-    const editModeButtons = document.getElementById('edit-mode-buttons');
-
-    inputs.forEach(input => input.disabled = !enable);
-
-    if (enable) {
-        viewModeButtons.style.display = 'none';
-        editModeButtons.style.display = 'block';
-        clearErrors();
-        validateForm();
-    } else {
-        viewModeButtons.style.display = 'block';
-        editModeButtons.style.display = 'none';
-        clearErrors();
-    }
-}
-
-// Event listeners for edit and cancel buttons
-document.getElementById('edit-profile-link').addEventListener('click', function (e) {
-    e.preventDefault();
-    toggleEditMode(true);
-});
-
-document.getElementById('cancel-link').addEventListener('click', function (e) {
-    e.preventDefault();
-    toggleEditMode(false);
-    document.querySelector('form').reset();
-});
-
-// Hide alerts with fade-out animation after 15 seconds
-document.addEventListener('DOMContentLoaded', function () {
-    const successAlert = document.querySelector('.alert-success');
-    const errorAlert = document.querySelector('.alert-danger');
-
-    if (successAlert) {
-        setTimeout(() => {
-            successAlert.classList.add('fade-out');
-            // Remove from DOM after animation completes (1s)
-            setTimeout(() => successAlert.style.display = 'none', 1000);
-        }, 5000); // 15-second delay before starting fade-out
+        $submitButton.text(isValid ? 'Save Changes' : 'Save Disabled').prop('disabled', !isValid);
+        return isValid;
     }
 
-    if (errorAlert) {
-        setTimeout(() => {
-            errorAlert.classList.add('fade-out');
-            // Remove from DOM after animation completes (1s)
-            setTimeout(() => errorAlert.style.display = 'none', 1000);
-        }, 5000); // 15-second delay before starting fade-out
+    function isValidName(name) {
+        return !/[0-9]/.test(name) && name.trim() !== '';
     }
+
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function validatePhone(phone) {
+        const re = /^[0-9]{3}-[0-9]{7,11}$/;
+        return re.test(phone);
+    }
+
+    // Input Validation Handlers
+    function setupInputValidation(inputId, errorId, validationFn) {
+        $(`#${inputId}`).on('input', function() {
+            const $input = $(this);
+            const value = $input.val();
+            const $error = $(`#${errorId}`);
+
+            const result = validationFn(value);
+            if (typeof result === 'string') {
+                $input.addClass('invalid');
+                $error.text(result);
+            } else {
+                $input.removeClass('invalid');
+                $error.text('');
+            }
+            validateForm();
+        });
+    }
+
+    // Toggle Edit Mode
+    function toggleEditMode(enable) {
+        $inputs.prop('disabled', !enable);
+        $viewModeButtons.toggle(!enable);
+        $editModeButtons.toggle(enable);
+        $uploadContainer.toggle(enable);
+
+        if (enable) {
+            clearErrors();
+            validateForm();
+        } else {
+            clearErrors();
+            $('form')[0].reset();
+            $profileImage.val('');
+        }
+    }
+
+    // Clear Errors
+    function clearErrors() {
+        $('.error-message').text('');
+        $('.invalid').removeClass('invalid');
+    }
+
+    // Fade Out Alerts
+    function fadeOutAlert($alert) {
+        if ($alert.length) {
+            setTimeout(() => {
+                $alert.addClass('fade-out');
+                setTimeout(() => $alert.hide(), 1000);
+            }, FADE_OUT_DELAY);
+        }
+    }
+
+    // Show Alert
+    function showAlert(type, message) {
+        const $existingAlert = $(`.alert-${type}`);
+        $existingAlert.remove();
+
+        const $alert = $('<div>')
+            .addClass(`alert alert-${type} text-center`)
+            .text(message);
+        $('.body-container').prepend($alert);
+        fadeOutAlert($alert);
+    }
+
+    // Image Upload Handling
+    function handleImageUpload(file) {
+        if (!file) return;
+
+        if (file.size > MAX_FILE_SIZE) {
+            $resizeError.text('File size exceeds 5MB limit. Please select a smaller image.').show();
+            $profileImage.val('');
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            $resizeError.text('Please select an image file.').show();
+            $profileImage.val('');
+            return;
+        }
+
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            $previewImage.attr('src', e.target.result);
+            $overlay.css('display', 'flex');
+            $resizeError.hide();
+
+            // Initialize Cropper.js
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper($previewImage[0], {
+                aspectRatio: 1, // Square aspect ratio
+                viewMode: 1,
+                dragMode: 'move',
+                cropBoxResizable: false,
+                cropBoxMovable: false,
+                toggleDragModeOnDblclick: false,
+                minCropBoxWidth: 150,
+                minCropBoxHeight: 150,
+                background: false,
+                center: true,
+                rounded: true // Circular crop area
+            });
+
+            // Reset zoom slider
+            $zoomSlider.val(1);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Upload Image
+    function uploadImage() {
+        if (!cropper) return;
+
+        cropper.getCroppedCanvas({
+            width: 150,
+            height: 150
+        }).toBlob(function(blob) {
+            const formData = new FormData();
+            formData.append('profileImage', blob, selectedFile.name);
+
+            $.ajax({
+                url: '/upload/profileimage',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    showAlert('success', 'Image uploaded successfully');
+                    $('.card-img-top').attr('src', response.imageUrl);
+                },
+                error: function(xhr) {
+                    showAlert('danger', 'Failed to upload image: ' + (xhr.responseText || 'Unknown error'));
+                }
+            });
+        });
+    }
+
+    // Event Listeners
+    $editLink.on('click', function(e) {
+        e.preventDefault();
+        toggleEditMode(true);
+    });
+
+    $cancelLink.on('click', function(e) {
+        e.preventDefault();
+        toggleEditMode(false);
+    });
+
+    setupInputValidation('f_name', 'f_name_error', value => {
+        if (/[0-9]/.test(value)) return 'First Name cannot contain numbers';
+        if (!value.trim()) return 'First Name is required';
+        return true;
+    });
+
+    setupInputValidation('l_name', 'l_name_error', value => {
+        if (/[0-9]/.test(value)) return 'Last Name cannot contain numbers';
+        if (!value.trim()) return 'Last Name is required';
+        return true;
+    });
+
+    setupInputValidation('email', 'email_error', value => {
+        return validateEmail(value) ? true : 'Please enter a valid email address';
+    });
+
+    setupInputValidation('phone_no', 'phone_no_error', value => {
+        return !value.trim() || validatePhone(value) ? true : 'Please enter a valid phone number (e.g., 123-4567890)';
+    });
+
+    $profileImage.on('change', function() {
+        handleImageUpload(this.files[0]);
+    });
+
+    $zoomSlider.on('input', function() {
+        if (cropper) {
+            cropper.zoomTo(parseFloat(this.value));
+        }
+    });
+
+    $confirmResize.on('click', function() {
+        uploadImage();
+        $overlay.hide();
+        $profileImage.val('');
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    });
+
+    $cancelResize.on('click', function() {
+        $overlay.hide();
+        $profileImage.val('');
+        $resizeError.hide();
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    });
+
+    $resetCrop.on('click', function() {
+        if (cropper) {
+            cropper.reset();
+            $zoomSlider.val(1);
+        }
+    });
+
+    // Initial Setup
+    $uploadContainer.hide();
+    fadeOutAlert($successAlert);
+    fadeOutAlert($errorAlert);
 });
