@@ -11,70 +11,7 @@
 </head>
 <body class="bg-body-secondary">
 <div class="body-container">
-    <nav class="navbar navbar-expand-lg bg-light p-0 shadow-sm">
-        <div class="container-fluid" id="header-container">
-            <!-- Logo -->
-            <a class="navbar-brand" th:href="@{/}">
-                <img th:src="@{/images/logo.svg}" height="40" alt="Logo" class="d-inline-block align-middle p-0">
-            </a>
-
-            <!-- Toggler for Mobile -->
-            <button class="navbar-toggler" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Navigation Links -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <!-- Always visible links -->
-                    <li class="nav-item">
-                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/}">
-                            <i class="fas fa-home fs-5"></i>
-                            <span class="small mt-1">Home</span>
-                        </a>
-                    </li>
-                    <!-- Shown only when authenticated -->
-                    <li class="nav-item">
-                        <a class="nav-link d-flex flex-column align-items-center px-5 nav-active" th:href="@{/network}">
-                            <i class="fas fa-users fs-5"></i>
-                            <span class="small mt-1">My Network</span>
-                        </a>
-                    </li>
-                    <!-- Shown only when NOT authenticated -->
-                    <li class="nav-item" sec:authorize="!isAuthenticated()">
-                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/login}">
-                            <i class="fa-solid fa-right-to-bracket fs-5"></i>
-                            <span class="small mt-1">Login</span>
-                        </a>
-                    </li>
-                    <li class="nav-item" sec:authorize="!isAuthenticated()">
-                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/register}">
-                            <i class="fa-solid fa-user-plus fs-5"></i>
-                            <span class="small mt-1">Register</span>
-                        </a>
-                    </li>
-                    <!-- Shown only when authenticated -->
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/profile}">
-                            <i class="fa-solid fa-id-card fs-5"></i>
-                            <span class="small mt-1">My Profile</span>
-                        </a>
-                    </li>
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link d-flex flex-column align-items-center px-5" th:href="@{/logout}">
-                            <i class="fa-solid fa-right-from-bracket fs-5"></i>
-                            <span class="small mt-1">Logout</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div th:replace="~{fragments/header :: header}"></div>
     <div class="fluid-container content">
         <div class="container" id="main-container">
             <div class="card shadow-sm">
@@ -91,10 +28,7 @@
             </div>
         </div>
     </div>
-
-    <div class="container-fluid bg-light footer-container d-flex justify-content-center align-items-center pt-3">
-        <p>© 2025 XYZ Solutions Pte. Ltd. All Rights Reserved</p>
-    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

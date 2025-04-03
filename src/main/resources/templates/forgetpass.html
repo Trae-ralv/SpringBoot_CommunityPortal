@@ -12,11 +12,11 @@
 </head>
 <body>
 <div class="body-container">
-    <div th:if="${errorMessage}" class="alert alert-danger alert-slide" id="error-alert" role="alert">
-        <span th:text="${errorMessage}"></span>
+    <div th:if="${param.error}" class="alert alert-danger alert-slide" id="error-alert" role="alert">
+        <span th:text="${param.error[0]}"></span>
     </div>
-    <div th:if="${successMessage}" class="alert alert-success alert-slide" id="success-alert" role="alert">
-        <span th:text="${successMessage}"></span>
+    <div th:if="${param.success}" class="alert alert-success alert-slide" id="success-alert" role="alert">
+        <span th:text="${param.success[0]}"></span>
     </div>
     <div class="container-fluid content">
         <div class="container" id="main-container">

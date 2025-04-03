@@ -23,7 +23,7 @@ body{
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     width: 50%;
-    background-color:white !important;
+    background-color: white !important;
 }
 
 .user-card {
@@ -32,6 +32,11 @@ body{
 
 .user-card:hover {
     transform: scale(1.05);
+}
+
+.card-img-top {
+    width: fit-content;
+    margin: auto;
 }
 
 .btn-primary {
@@ -48,4 +53,8 @@ body{
 
 .btn-primary:disabled {
     opacity: 30%;
+}
+
+.form-control:focus {
+    box-shadow: none !important;
 }
